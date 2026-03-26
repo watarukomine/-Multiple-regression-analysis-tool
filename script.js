@@ -106,24 +106,7 @@ const els = {
   tableBody: document.getElementById('table-body')
 };
 
-// Initialization
-function init() {
-  els.uploadArea.onclick = () => els.csvInput.click();
-  els.csvInput.onchange = (e) => handleFiles(e.target.files);
-  els.loadSample.onclick = loadSampleData;
-  els.clearData.onclick = () => location.reload();
-  els.processMerge.onclick = processMerge;
-  els.runAnalysis.onclick = runAnalysis;
 
-  // Drag and Drop
-  els.uploadArea.ondragover = (e) => { e.preventDefault(); els.uploadArea.classList.add('active'); };
-  els.uploadArea.ondragleave = () => els.uploadArea.classList.remove('active');
-  els.uploadArea.ondrop = (e) => {
-    e.preventDefault();
-    els.uploadArea.classList.remove('active');
-    handleFiles(e.dataTransfer.files);
-  };
-}
 
 async function handleFiles(files) {
   for (const file of files) {
@@ -508,39 +491,36 @@ async function exportToPDF() {
 // --- Init & Events ---
 
 function init() {
-  const dropZone = document.getElementById('drop-zone');
-  const fileInput = document.getElementById('file-input');
-  const sampleBtn = document.getElementById('sample-btn');
-  const clearBtn = document.getElementById('clear-btn');
+  // IDs match index.html
+  const uploadArea = document.getElementById('upload-area');
+  const csvInput = document.getElementById('csv-input');
+  const sampleBtn = document.getElementById('load-sample');
+  const clearBtn = document.getElementById('clear-data');
   const processMergeBtn = document.getElementById('process-merge');
   const runAnalysisBtn = document.getElementById('run-analysis');
   const exportExcelBtn = document.getElementById('export-excel');
   const exportPdfBtn = document.getElementById('export-pdf');
 
-  // Event Listeners
-  if (exportExcelBtn) exportExcelBtn.addEventListener('click', exportToExcel);
-  if (exportPdfBtn) exportPdfBtn.addEventListener('click', exportToPDF);
-  
-  if (dropZone) {
-    dropZone.onclick = () => fileInput.click();
-    dropZone.ondragover = (e) => { e.preventDefault(); dropZone.style.borderColor = 'var(--primary)'; };
-    dropZone.ondragleave = () => { dropZone.style.borderColor = 'var(--border)'; };
-    dropZone.ondrop = (e) => {
+  if (uploadArea) {
+    uploadArea.onclick = () => csvInput && csvInput.click();
+    uploadArea.ondragover = (e) => { e.preventDefault(); uploadArea.style.borderColor = 'var(--primary)'; };
+    uploadArea.ondragleave = () => { uploadArea.style.borderColor = ''; };
+    uploadArea.ondrop = (e) => {
       e.preventDefault();
-      dropZone.style.borderColor = 'var(--border)';
+      uploadArea.style.borderColor = '';
       handleFiles(e.dataTransfer.files);
     };
   }
 
-  if (fileInput) fileInput.onchange = (e) => handleFiles(e.target.files);
-  if (sampleBtn) sampleBtn.onclick = () => { loadSampleData(); showMergeUI(); };
+  if (csvInput) csvInput.onchange = (e) => handleFiles(e.target.files);
+  if (sampleBtn) sampleBtn.onclick = () => { loadSampleData(); };
   if (clearBtn) clearBtn.onclick = () => location.reload();
-  if (processMergeBtn) processMergeBtn.onclick = () => { processMerge(); };
+  if (processMergeBtn) processMergeBtn.onclick = processMerge;
   if (runAnalysisBtn) runAnalysisBtn.onclick = runAnalysis;
+  if (exportExcelBtn) exportExcelBtn.addEventListener('click', exportToExcel);
+  if (exportPdfBtn) exportPdfBtn.addEventListener('click', exportToPDF);
 
-  if (els.targetSelect) {
-    els.targetSelect.onchange = renderCheckboxes;
-  }
+  if (els.targetSelect) els.targetSelect.onchange = renderCheckboxes;
 }
 
 init();
